@@ -1,0 +1,19 @@
+Config { font = "xft:Terminus-12"
+       , bgColor = "black"
+       , fgColor = "grey"
+       , position = Top
+       , lowerOnStart = True
+       , commands = [ 
+                      Run Network "em1" ["-L","0","-H","32","--normal","green","--high","red"] 10
+       		          , Run Network "wlo1" ["-L","0","-H","32","--normal","green","--high","red"] 10
+                    , Run Cpu ["-t", "C: <fc=green><total>%</fc>", "-L","3","-H","50","--normal","green","--high","red"] 10
+                    , Run Memory ["-t","M: <fc=green><usedratio>%</fc>"] 10
+                    , Run Swap [] 10
+                    , Run Date "%F %H:%M:%S" "date" 10
+                    , Run Com "sh" ["/home/jorge/bin/volume.sh"] "vol" 1
+                    , Run StdinReader
+                    ]
+       , sepChar = "%"
+       , alignSep = "}{"
+       , template = "%StdinReader% }{<fc=#00FFFF>%cpu%</fc> | <fc=#00FFFF>%memory%</fc> | <fc=#00FFFF>%em1%</fc> | <fc=green>V:</fc><fc=#00FFFF>%vol%</fc> | <fc=#00FF00>%date%</fc>"
+       }

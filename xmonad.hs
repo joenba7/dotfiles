@@ -1,0 +1,117 @@
+import Data.Map (fromList)
+import System.Exit
+import XMonad
+import XMonad.Actions.SpawnOn
+import qualified XMonad.StackSet as W
+import XMonad.Layout.MultiToggle
+import XMonad.Layout.MultiToggle.Instances
+import XMonad.Layout.Spacing
+import XMonad.Hooks.DynamicLog
+import XMonad.Hooks.ManageDocks
+import XMonad.Hooks.SetWMName
+import XMonad.Layout.IndependentScreens
+import XMonad.Util.Run
+ 
+withScreen screen f = screenWorkspace screen >>= flip whenJust (windows . f)
+
+myTerminal = "urxvtc"
+ 
+bright = "#80c0ff"
+dark   = "#13294e"
+ 
+myLayout = avoidStruts (mkToggle (NOBORDERS ?? FULL ?? EOT) $ tiled ||| Full ||| myWide)
+  where
+     -- default tiling algorithm partitions the screen into two panes
+     tiled   = spacing 5 $ Tall nmaster delta ratio
+
+     -- The default number of windows in the master pane
+     nmaster = 1
+
+     -- Default proportion of screen occupied by master pane
+     ratio   = 1/2
+
+     -- Percent of screen to increment by when resizing panes
+     delta   = 3/100
+
+myWide = Mirror $ Tall nmaster delta ratio
+    where
+        -- The default number of windows in the master pane
+        nmaster = 1
+        -- Percent of screen to increment by when resizing panes
+        delta   = 3/100
+        -- Default proportion of screen occupied by master pane
+        ratio   = 90/100
+
+myManageHook = composeAll
+    [ className =? "MPlayer"        --> doFloat
+    , className =? "Gimp"           --> doFloat
+    , className =? "VirtualBox"     --> doFloat
+    , className =? "VLC"            --> doFloat
+    , className =? "Apache Directory Studio"    --> doFloat
+    , resource  =? "desktop_window" --> doIgnore
+    , resource  =? "kdesktop"       --> doIgnore ]
+ 
+main = do
+    nScreens    <- countScreens
+    hs          <- mapM (spawnPipe . xmobarCommand) [0 .. nScreens-1]
+    xmonad $ defaultConfig {
+        borderWidth             = 2,
+        workspaces              = withScreens nScreens (map show [1..3]),
+        normalBorderColor       = dark,
+        focusedBorderColor      = bright,
+        modMask                 = mod1Mask,
+        keys                    = keyBindings,
+        layoutHook              = myLayout,
+        manageHook              = myManageHook,
+        logHook                 = mapM_ dynamicLogWithPP $ zipWith pp hs [0..nScreens],
+        startupHook             = setWMName "LG3D" -- gotta keep this until all the machines I use have the version of openjdk that respects _JAVA_AWT_WM_NONREPARENTING`
+        }
+ 
+keyBindings conf = let m = modMask conf in fromList $ [
+    ((m .|. shiftMask  , xK_Return     ), spawnHere myTerminal),
+    ((mod4Mask         , xK_p          ), spawnHere "dmenu_run -nb black -nf cyan -sb cyan -sf black -fn -xos4-terminus-medium-r-*-*-14-*"),
+    ((m .|. shiftMask  , xK_c          ), kill),
+    ((m                , xK_space      ), sendMessage NextLayout),
+    ((m .|. shiftMask  , xK_space      ), setLayout $ XMonad.layoutHook conf),
+    ((m                , xK_n          ), refresh),
+    ((m                , xK_Tab        ), windows W.focusDown),
+    ((m                , xK_j          ), windows W.focusDown),
+    ((m                , xK_k          ), windows W.focusUp  ),
+    ((m                , xK_m          ), windows W.focusMaster  ),
+    ((m                , xK_Return     ), windows W.swapMaster),
+    ((m .|. shiftMask  , xK_j          ), windows W.swapDown  ),
+    ((m .|. shiftMask  , xK_k          ), windows W.swapUp    ),
+    ((m                , xK_h          ), sendMessage Shrink),
+    ((m                , xK_l          ), sendMessage Expand),
+    ((m                , xK_t          ), withFocused $ windows . W.sink),
+    ((m                , xK_comma      ), sendMessage (IncMasterN 1)),
+    ((m              , xK_period), sendMessage (IncMasterN (-1))),
+    ((mod4Mask .|. shiftMask, xK_q     ), io (exitWith ExitSuccess)),
+    ((mod4Mask         , xK_q          ), restart "xmonad" True),
+    ((0                , xK_Print      ), spawn "scrot"),
+    ((0 , 0x1008ff12)  ,                  spawn "amixer -q set Master toggle"),
+    ((0 , 0x1008ff11)  ,                  spawn "amixer -q set Master 5%-"),
+    ((0 , 0x1008ff13)  ,                  spawn "amixer -q set Master 5%+"),
+    ((mod4Mask         , xK_Return     ), sendMessage $ Toggle FULL),
+    ((m .|. controlMask, xK_l          ), spawn "xlock -mode blank")
+
+    ] ++ [
+    ((m .|. mod4Mask    , key           ), windows (onCurrentScreen f workspace))
+    | (key, workspace) <- zip [xK_1..xK_9] (workspaces' conf)
+    , (f, m)           <- [(W.greedyView, 0), (W.shift, shiftMask)] 
+
+
+    ]
+ 
+xmobarCommand (S s) = unwords ["xmobar", "-x", show s, "/home/jorge/.xmobarrc"]
+ 
+pp h s = marshallPP s defaultPP {
+    ppCurrent           = color "green",
+    ppVisible           = color "yellow",
+    ppHiddenNoWindows   = color dark,
+    ppUrgent            = color "red",
+    ppSep               = "",
+    ppOrder             = \(wss:layout:title:_) -> [wss, "[ ", title, " ]"],
+    ppOutput            = hPutStrLn h
+    }
+    where color c = xmobarColor c ""
