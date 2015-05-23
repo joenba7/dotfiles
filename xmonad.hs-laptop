@@ -14,7 +14,7 @@ import XMonad.Util.Run
  
 withScreen screen f = screenWorkspace screen >>= flip whenJust (windows . f)
 
-myTerminal = "urxvtc"
+myTerminal = "urxvt"
  
 bright = "#80c0ff"
 dark   = "#13294e"
@@ -111,7 +111,8 @@ pp h s = marshallPP s defaultPP {
     ppHiddenNoWindows   = color dark,
     ppUrgent            = color "red",
     ppSep               = "",
-    ppOrder             = \(wss:layout:title:_) -> [wss, "[ ", title, " ]"],
+    ppOrder             = \(wss:layout:title:_) -> ["[", wss, "]"],
+    --, "[ ", title, " ]"],
     ppOutput            = hPutStrLn h
     }
     where color c = xmobarColor c ""

@@ -1,0 +1,21 @@
+Config { font = "xft:Terminus-12"
+       , bgColor = "black"
+       , fgColor = "grey"
+       , position = Top
+       , lowerOnStart = True
+       , commands = [ 
+                      Run Network "enp0s25" ["-L","0","-H","32","--normal","green","--high","red"] 10
+       		          , Run Network "wlo1" ["-t", "WL: <tx>/<rx>", "-L","0","-H","32","--normal","green","--high","red"] 10
+                    , Run Cpu ["-t", "C: <fc=green><total>%</fc>", "-L","3","-H","50","--normal","green","--high","red"] 10
+                    , Run Memory ["-t","M: <fc=green><usedratio>%</fc>"] 10
+                    , Run Swap [] 10
+                    , Run Battery ["-t", "B: <fc=green><left>% (<timeleft>)</fc>"] 60
+                    , Run Date "%F <fc=#00FFFF>| </fc>%H:%M:%S<fc=#00FFFF> |</fc>" "date" 10
+                    , Run DynNetwork ["-t", "<dev>: <tx>kB/s|<rx>kB/s", "-L", "1000", "-H", "5000", "--low", "darkgreen", "--normal", "darkorange", "--high", "darkred"] 10
+                    , Run Com "sh" ["/home/jorge/bin/volume.sh"] "vol" 1
+                    , Run StdinReader
+                    ]
+       , sepChar = "%"
+       , alignSep = "}{"
+       , template = "%StdinReader% }<fc=#00FFFF>%cpu%</fc> | <fc=#00FFFF>%memory%</fc> | <fc=#00FFFF>%wlo1%</fc> | <fc=green>V:</fc><fc=#00FFFF>%vol%</fc> | <fc=#00FFFF>%battery%</fc> { <fc=#00FF00>%date%</fc>"
+       }
