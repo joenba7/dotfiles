@@ -1,7 +1,7 @@
 setxkbmap no
 xsetroot -cursor_name left_ptr
 #urxvtd -q -o -f
-xrandr --output LVDS1 --mode 1366x768 --left-of HDMI1 --output HDMI1 --mode 1920x1200
+xrandr --output LVDS1 --mode 1366x768 --left-of DP1 --output DP1 --mode 1920x1200
 feh --bg-scale $HOME/Wallpaper/default-wallpaper
 autocutsel -fork &
 autocutsel -selection PRIMARY -fork &

@@ -1,4 +1,4 @@
-*termName:             rxvt
+*termName:      rxvt
 
 ! black
 URxvt.color0  : #2E2E34343636
@@ -28,9 +28,22 @@ URxvt.color15 : #EEEEEEEEECEC
 URxvt*foreground:White
 URxvt*background:Black
 
-! fonts
-! run "fc-list" for a list of available fonts
-URxvt*font: xft:Terminus:pixelsize=15
+! Fade the text by the given percentage when focus is lost
+! URxvt*fading:                           30
+
+! Use the specified colour to disp1ay underlined characters when the foreground
+! colour is the default.
+URxvt*colorUL:                          yellow
+
+! If set, use the specified colour as the colour for the underline itself. If
+! unset, use the foreground colour
+URxvt*underlineColor:                   yellow
+
+! Select the fonts to be used. This is a comma separated list of font names that are checked in order when trying to find glyphs for characters
+URxvt*font:                             -xos4-terminus-medium-*-*-*-14-*-*-*-*-*-iso8859-15,xft:terminus:pixelsize:12
+URxvt*boldFont:                         -xos4-terminus-bold-*-*-*-14-*-*-*-*-*-iso8859-15,xft:terminus:bold:pixelsize:12
+URxvt*italicFont:                       xft:Bitstream Vera Sans Mono:italic:autohint=true:pixelsize=12
+URxvt*boldItalicFont:                   xft:Bitstream Vera Sans Mono:bold:italic:autohint=true:pixelsize=12
 
 URxvt*scrollBar: False
 !URxvt*scrollTtyOutput: False
@@ -49,10 +62,3 @@ URxvt.matcher.button  : 1
 URxvt*scrollstyle:rxvt
 URxvt.rt3matcher.launcher: /usr/bin/google-chrome
 URxvt.rt3matcher.button: 1
-
-!#URxvt.tabbar-fg: 244
-!#URxvt.tabbar-bg: 16
-!#URxvt.tab-fg:    255
-!#URxvt.tab-bg:    52
-!#URxvt.title-fg:  244
-!#URxvt.title-bg:  16
