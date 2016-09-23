@@ -1,0 +1,17 @@
+!
+! This is an `xmodmap' input file for
+!   PC 105 key, wide Delete, tall Enter (XFree86; Norwegian) keyboards.
+! Automatically generated on Fri Aug 10 13:55:33 2001 by jo with
+! XKeyCaps 2.46; Copyright (c) 1999 Jamie Zawinski <jwz@jwz.org>.
+! http://www.jwz.org/xkeycaps/
+!
+! This file makes the following changes:
+!
+! The "Esc" key generates Caps_Lock, and the Lock modifier
+ 
+keycode 0x09 =  Caps_Lock
+keycode 0x42 =  Escape
+ 
+clear Lock
+ 
+add    Lock    = Caps_Lock
